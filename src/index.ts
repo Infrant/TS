@@ -2,9 +2,13 @@ import {renderSearchFormBlock} from './search-form.js'
 import {renderSearchStubBlock} from './search-results.js'
 import {renderUserBlock} from './user.js'
 import {renderToast} from './lib.js'
+import {favoritesAmountKey, userKey} from './constants.js';
+import {getFavoritesAmount, getUserData, onFormSubmit} from './handlers.js';
 
 window.addEventListener('DOMContentLoaded', () => {
-  renderUserBlock(0)
+  const {userName, avatarUrl} = getUserData()
+  const {favoritesAmount} = getFavoritesAmount()
+  renderUserBlock(userName, avatarUrl, favoritesAmount)
   renderSearchFormBlock()
   renderSearchStubBlock()
   renderToast(
@@ -15,4 +19,9 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
   )
+  const form = document.querySelector('form')
+  form.onsubmit = onFormSubmit
 })
+
+localStorage.setItem(userKey, JSON.stringify({userName: 'Wade Warren', avatarUrl: '/img/avatar.png'}));
+localStorage.setItem(favoritesAmountKey, JSON.stringify({favoritesAmount: 7}));
