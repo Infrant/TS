@@ -1,2 +1,1 @@
-export const userKey = 'userKey'
-export const favoritesAmountKey = 'favoritesAmountKey'
+export const HOMY_API_URL = 'http://127.0.0.1:3030'
