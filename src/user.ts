@@ -24,57 +24,54 @@ export function renderUserBlock() {
   )
 }
 
-export function getUserData(): IUser {   
-  const user:unknown = JSON.parse(localStorage.getItem('user'))
+export function getUserData(): IUser {
+  const user: unknown = JSON.parse(localStorage.getItem('user') || '')
 
-  const emptyUser = {
+  const emptyUser: IUser = {
     username: 'unknown',
     avatarUrl: '/img/empty.png'
   }
-  
-  const result = {
-    username: null,
-    avatarUrl: null
-  }
 
-  if (typeof user !== 'object' || !user) {
-    return emptyUser
-  } 
-  
-  Object.hasOwn(user, 'username') && user['username'] ? result.username = user['username'] : result.username = emptyUser.username
-  Object.hasOwn(user, 'avatarUrl') && user['avatarUrl'] ? result.avatarUrl = user['avatarUrl'] : result.avatarUrl = emptyUser.avatarUrl
+  const result: IUser = {
+    username: isUser(user) ? user.username : emptyUser.username,
+    avatarUrl: isUser(user) ? user.avatarUrl : emptyUser.avatarUrl
+  }
 
   return result
 }
 
-export function getFavoritesAmount(): number { 
+function isUser(user: unknown): user is IUser {
+  return typeof user === 'object' && user !== null && 'username' in user && 'avatarUrl' in user
+}
+
+export function getFavoritesAmount(): number {
   const favoriteItems = getFavorites()
 
   return favoriteItems.length
 }
 
-function getFavorites(): Pick<IPlaces, 'id' | 'image' | 'name'>[] { 
-  const favoriteItems: unknown = JSON.parse(localStorage.getItem('favoriteItems'))
+function getFavorites(): Pick<IPlaces, 'id' | 'image' | 'name'>[] {
+  const favoriteItems: unknown = JSON.parse(localStorage.getItem('favoriteItems') || '')
 
   if (!Array.isArray(favoriteItems) || favoriteItems.length === 0) {
     return []
-  } 
+  }
 
   return favoriteItems
 }
 
-export function toggleFavorites(favPlace: Pick<IPlaces, 'id' | 'image' | 'name'>): void { 
+export function toggleFavorites(favPlace: Pick<IPlaces, 'id' | 'image' | 'name'>): void {
   const favoriteItems = getFavorites()
 
   const filtredFavorites = favoriteItems.filter((fav: Pick<IPlaces, 'id' | 'image' | 'name'>) => fav.id !== favPlace.id)
 
-  filtredFavorites.length === favoriteItems.length ? 
-    localStorage.setItem('favoriteItems', JSON.stringify([...favoriteItems, favPlace])) : 
+  filtredFavorites.length === favoriteItems.length ?
+    localStorage.setItem('favoriteItems', JSON.stringify([...favoriteItems, favPlace])) :
     localStorage.setItem('favoriteItems', JSON.stringify(filtredFavorites))
 }
 
 
-export function isFavorite(placeId: string): boolean { 
+export function isFavorite(placeId: string): boolean {
   const favoriteItems = getFavorites()
 
   return favoriteItems.find((fav: Pick<IPlaces, 'id' | 'image' | 'name'>) => fav.id === placeId) ? true : false
